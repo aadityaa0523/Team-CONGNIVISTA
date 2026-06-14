@@ -4,7 +4,7 @@
 
 HydroMind Sentinel turns low-cost IoT sensors into a city-scale **digital twin** of drainage infrastructure — predicting floods *2 hours ahead*, scoring drain health, evaluating sewer-worker safety, and broadcasting **multilingual (Telugu / Tamil / English) SMS, voice, and Telegram alerts** before water reaches the streets.
 
-**Tracks:** IoT · GenAI · Sustainable Development
+**Tracks:** IoT· Sustainable Development
 **Hardware cost:** ₹560/node — ~30× denser coverage than ₹17,000 manual gauges.
 
 ---
@@ -29,8 +29,6 @@ A network of **ESP32 nodes** (ultrasonic water-level + MQ-4 methane sensors) pub
 5. **Alerts** via Sarvam AI (Telugu/Tamil TTS + translation), Twilio (SMS/voice), and Telegram — orchestrated by an **n8n** workflow.
 6. **Explains** every prediction with **Gemini**-powered situational briefings, root-cause analysis, and an AI copilot.
 7. **Visualizes** everything live in a React Municipal Command Center (D3 animations, Recharts forecasts, Leaflet heat map).
-
-📄 **One-page pitch:** see [PITCH.md](PITCH.md)
 
 ---
 
@@ -205,7 +203,6 @@ pytest -q          # full suite (44+ tests)
 ## 🏆 Hackathon Tracks
 
 - **IoT** — low-cost ESP32 edge nodes + MQTT + digital twin of physical drainage. See [PITCH.md](PITCH.md#-iot-fit).
-- **GenAI** — Gemini situational intelligence + Sarvam multilingual voice.
 - **Sustainable Development** — flood resilience, clean water/sanitation, climate adaptation, worker safety. See [PITCH.md](PITCH.md#-sustainable-development-fit).
 
 ---
