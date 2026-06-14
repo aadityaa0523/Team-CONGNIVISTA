@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/api.ts","./src/levels.ts","./src/main.tsx","./src/types.ts","./src/components/alertpanel.tsx","./src/components/chatcopilot.tsx","./src/components/forecastchart.tsx","./src/components/riveranimation.tsx","./src/hooks/usewebsocket.ts"],"errors":true,"version":"5.9.3"}

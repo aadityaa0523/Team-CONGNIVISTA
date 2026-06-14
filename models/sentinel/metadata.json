@@ -1,0 +1,67 @@
+{
+  "trained_at": "2026-06-13T16:46:25.925108Z",
+  "feature_columns": [
+    "hour",
+    "minute",
+    "water_level",
+    "rise_rate",
+    "rainfall_1h",
+    "rainfall_3h",
+    "methane_ppm",
+    "water_level_lag_1",
+    "water_level_lag_2",
+    "water_level_lag_3",
+    "rainfall_1h_lag_1",
+    "methane_lag_1",
+    "rolling_mean_water_level",
+    "rolling_std_water_level",
+    "rolling_mean_rainfall",
+    "arimax_wl_forecast_60min"
+  ],
+  "label_map": {
+    "SAFE": 0,
+    "WATCH": 1,
+    "WARNING": 2,
+    "CRITICAL": 3
+  },
+  "class_labels": [
+    "SAFE",
+    "WATCH",
+    "WARNING",
+    "CRITICAL"
+  ],
+  "horizon_steps": 12,
+  "sample_interval_min": 5.0,
+  "forecast_horizon_min": 60,
+  "rolling_window": 6,
+  "arimax_order": [
+    2,
+    1,
+    2
+  ],
+  "arimax_warmup": 60,
+  "arimax_endog": "water_level",
+  "arimax_exog": [
+    "rainfall_1h",
+    "rainfall_3h"
+  ],
+  "feature_medians": {
+    "hour": 11.0,
+    "minute": 25.0,
+    "water_level": 49.325777267969436,
+    "rise_rate": -0.06077625711624677,
+    "rainfall_1h": 0.27142911241498396,
+    "rainfall_3h": 29.06802688610662,
+    "methane_ppm": 91.51150168790542,
+    "water_level_lag_1": 49.325777267969436,
+    "water_level_lag_2": 49.325777267969436,
+    "water_level_lag_3": 49.325777267969436,
+    "rainfall_1h_lag_1": 0.26905771850196303,
+    "methane_lag_1": 90.09981287158143,
+    "rolling_mean_water_level": 49.2130115870975,
+    "rolling_std_water_level": 1.5768847227990548,
+    "rolling_mean_rainfall": 0.292149914655323,
+    "arimax_wl_forecast_60min": 51.30607783056621
+  },
+  "random_seed": 42
+}

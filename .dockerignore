@@ -1,0 +1,24 @@
+# Python
+.venv/
+**/__pycache__/
+**/*.pyc
+models/
+*.pkl
+
+# Node / frontend
+node_modules/
+frontend/node_modules/
+frontend/dist/
+
+# Tooling & secrets
+.git/
+.gitignore
+.vscode/
+.env
+tests/
+firmware/
+**/*.md
+
+# OS
+Thumbs.db
+.DS_Store

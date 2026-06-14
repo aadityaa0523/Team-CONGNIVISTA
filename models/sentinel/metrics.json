@@ -1,0 +1,61 @@
+{
+  "accuracy": 0.726027397260274,
+  "precision_macro": 0.4463281502858993,
+  "recall_macro": 0.4033067542213884,
+  "f1_macro": 0.38766035022221496,
+  "precision_weighted": 0.7455806067359604,
+  "recall_weighted": 0.726027397260274,
+  "f1_weighted": 0.7070157213608282,
+  "confusion_matrix": [
+    [
+      233,
+      6,
+      21,
+      0
+    ],
+    [
+      50,
+      26,
+      3,
+      3
+    ],
+    [
+      9,
+      0,
+      6,
+      0
+    ],
+    [
+      7,
+      0,
+      1,
+      0
+    ]
+  ],
+  "classification_report": "              precision    recall  f1-score   support\n\n        SAFE       0.78      0.90      0.83       260\n       WATCH       0.81      0.32      0.46        82\n     WARNING       0.19      0.40      0.26        15\n    CRITICAL       0.00      0.00      0.00         8\n\n    accuracy                           0.73       365\n   macro avg       0.45      0.40      0.39       365\nweighted avg       0.75      0.73      0.71       365\n",
+  "feature_importance": {
+    "hour": 0.07569138705730438,
+    "minute": 0.034619029611349106,
+    "water_level": 0.09124794602394104,
+    "rise_rate": 0.04868119955062866,
+    "rainfall_1h": 0.08591318875551224,
+    "rainfall_3h": 0.06273981183767319,
+    "methane_ppm": 0.05850805342197418,
+    "water_level_lag_1": 0.05974471941590309,
+    "water_level_lag_2": 0.05041950196027756,
+    "water_level_lag_3": 0.06586658209562302,
+    "rainfall_1h_lag_1": 0.04075700789690018,
+    "methane_lag_1": 0.06747874617576599,
+    "rolling_mean_water_level": 0.08081106096506119,
+    "rolling_std_water_level": 0.04893946647644043,
+    "rolling_mean_rainfall": 0.06900816410779953,
+    "arimax_wl_forecast_60min": 0.05957411229610443
+  },
+  "cv_accuracies": [
+    0.6558823529411765,
+    0.6558823529411765,
+    0.8147058823529412,
+    0.6647058823529411
+  ],
+  "cv_mean_accuracy": 0.6977941176470588
+}

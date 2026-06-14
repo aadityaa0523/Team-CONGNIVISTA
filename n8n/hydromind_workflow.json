@@ -1,0 +1,99 @@
+{
+  "name": "HydroMind Sentinel — Alert Automation",
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "meta": {
+    "description": "Receives an alert from the HydroMind alert_engine (_fire_n8n POST), generates a Gemini incident report, synthesises Telugu/Tamil audio via Sarvam, and logs an incident document in MongoDB. Set N8N_WEBHOOK_URL in the backend .env to this workflow's production webhook URL."
+  },
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "hydromind-alert",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "webhook-1",
+      "name": "Alert Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 320],
+      "webhookId": "hydromind-alert"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [{ "name": "Content-Type", "value": "application/json" }]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [{\n    \"parts\": [{\n      \"text\": \"Generate a concise municipal flood incident report. Node: {{ $json.body.node_id }}. Flood level: {{ $json.body.flood_level }}. Current depth: {{ $json.body.distance_cm }} cm. Methane: {{ $json.body.methane_ppm }} ppm. Sewer: {{ $json.body.sewer_safety.sewer_safety_index }}. Risk class: {{ $json.body.risk_class }}. Time to flood: {{ $json.body.time_to_flood_min }} min. Include cause, severity, impact, and 2 recommended actions.\"\n    }]\n  }]\n}",
+        "options": {}
+      },
+      "id": "gemini-1",
+      "name": "Gemini Incident Report",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [520, 320],
+      "notesInFlow": true,
+      "notes": "Attach an HTTP Query Auth credential carrying ?key=GEMINI_API_KEY."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sarvam.ai/text-to-speech",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "api-subscription-key", "value": "={{ $env.SARVAM_API_KEY }}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"inputs\": [\"{{ $('Alert Webhook').item.json.body.briefing }}\"],\n  \"target_language_code\": \"te-IN\",\n  \"speaker\": \"meera\"\n}",
+        "options": {}
+      },
+      "id": "sarvam-1",
+      "name": "Sarvam TTS",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [800, 320]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "collection": "incidents",
+        "fields": "node_id,flood_level,distance_cm,methane_ppm,risk_class,ts,incident_report",
+        "options": {}
+      },
+      "id": "mongo-1",
+      "name": "Log Incident (MongoDB)",
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1.1,
+      "position": [1080, 420],
+      "notes": "Attach a MongoDB credential pointing at the hydromind database."
+    }
+  ],
+  "connections": {
+    "Alert Webhook": {
+      "main": [[{ "node": "Gemini Incident Report", "type": "main", "index": 0 }]]
+    },
+    "Gemini Incident Report": {
+      "main": [[{ "node": "Sarvam TTS", "type": "main", "index": 0 }]]
+    },
+    "Sarvam TTS": {
+      "main": [
+        [
+          { "node": "Log Incident (MongoDB)", "type": "main", "index": 0 }
+        ]
+      ]
+    }
+  },
+  "pinData": {}
+}

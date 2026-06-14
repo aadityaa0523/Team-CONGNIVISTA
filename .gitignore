@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+venv/
+.venv/
+env/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+*.pkl
+
+# Environment
+.env
+
+# Node / frontend
+node_modules/
+dist/
+.next/
+*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+*.log
+
+# Firmware secrets (never commit)
+firmware/sensor_node/secrets.py
+
+# Claude / AI assistant files
+.claude/
+CLAUDE.md
+CLAUDE.MD
+CLAUDE2.md

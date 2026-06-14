@@ -1,0 +1,97 @@
+# HydroMind full stack for Vultr (Phase 10).
+#
+# Run from the repo root so build contexts and the root .env resolve correctly:
+#   docker compose -f infra/docker-compose.yml --env-file .env up -d --build
+#
+# MongoDB is external (Atlas) and configured via MONGO_URI in .env.
+
+services:
+  influxdb:
+    image: influxdb:2.7
+    restart: unless-stopped
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${INFLUX_PASSWORD:-changeme123}
+      - DOCKER_INFLUXDB_INIT_ORG=hydromind
+      - DOCKER_INFLUXDB_INIT_BUCKET=sensor_readings
+      # Shared with the backend below so they always match.
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUX_TOKEN:-hydromind-local-token}
+
+  mosquitto:
+    image: eclipse-mosquitto:2
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+      - "8883:8883"   # TLS — see broker/mosquitto.conf + infra/DEPLOY.md
+    volumes:
+      - ../broker/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - mosquitto_data:/mosquitto/data
+      # Mount TLS certs here once generated (Phase 9 production):
+      # - ../broker/certs:/mosquitto/certs:ro
+
+  backend:
+    build:
+      context: ..
+      dockerfile: backend/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - ../.env
+    # These override .env so the backend talks to peers by service name and
+    # uses the same Influx token the DB was initialised with.
+    environment:
+      - MQTT_BROKER_HOST=mosquitto
+      - MQTT_BROKER_PORT=1883
+      - INFLUX_URL=http://influxdb:8086
+      - INFLUX_ORG=hydromind
+      - INFLUX_BUCKET=sensor_readings
+      - INFLUX_TOKEN=${INFLUX_TOKEN:-hydromind-local-token}
+    volumes:
+      - backend_models:/app/models   # persist trained ARIMAX/classifier pickles
+    depends_on:
+      - influxdb
+      - mosquitto
+
+  n8n:
+    image: n8nio/n8n:latest
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=${N8N_HOST:-localhost}
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - GENERIC_TIMEZONE=Asia/Kolkata
+      # Basic auth for the n8n editor UI.
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=${N8N_USER:-admin}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_PASSWORD:-changeme123}
+      # API keys consumed by the workflow's HTTP nodes.
+      - SARVAM_API_KEY=${SARVAM_API_KEY:-}
+    volumes:
+      - n8n_data:/home/node/.n8n
+      # Mount the exported workflow for manual import in the editor.
+      - ../n8n:/workflows:ro
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: frontend/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      # - "443:443"   # enable after Certbot provisions TLS (infra/DEPLOY.md)
+    depends_on:
+      - backend
+
+volumes:
+  influxdb_data:
+  mosquitto_data:
+  backend_models:
+  n8n_data:
